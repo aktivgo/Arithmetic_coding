@@ -38,8 +38,8 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ArithmeticDecode.cs" />
-        <Compile Include="ArithmeticEncode.cs" />
+        <Compile Include="ArithmeticDecoder.cs" />
+        <Compile Include="ArithmeticEncoder.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
