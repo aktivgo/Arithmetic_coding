@@ -88,19 +88,32 @@ namespace arithmetic_coding
             StreamReader reader = new StreamReader(stream, Encoding.Default);
             string textFromFile = reader.ReadToEnd();
             stream.Close();
-            Console.WriteLine("Входные данные:\n" + textFromFile.Replace("&", " ") + "\n");
+            Console.WriteLine("Входные данные:\n" + textFromFile + "\n");
             char[] separators = { '\n', '\r' };
             string[] textAr = textFromFile.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            Dictionary<string, char> table = new Dictionary<string, char>();
+            Dictionary<char, KeyValuePair<double, double>> table =
+                new Dictionary<char, KeyValuePair<double, double>>();
             for (int i = 1; i < textAr.Length; i++)
             {
-                string code = textAr[i].Substring(textAr[i].IndexOf(" ", StringComparison.Ordinal) + 1);
-                char character = textAr[i][0];
-                table.Add(code, character);
+                string[] row = textAr[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                char character;
+                KeyValuePair<double, double> interval;
+                if (row.Length == 2)
+                {
+                    character = ' ';
+                    interval = new KeyValuePair<double, double>(double.Parse(row[0]), double.Parse(row[1]));
+                }
+                else
+                {
+                    character = char.Parse(row[0]);
+                    interval = new KeyValuePair<double, double>(double.Parse(row[1]), double.Parse(row[2]));
+                }
+
+                table.Add(character, interval);
             }
 
             Console.WriteLine("Результат:");
-            Console.WriteLine(ArithmeticDecoder.Decode());
+            Console.WriteLine(ArithmeticDecoder.Decode(double.Parse(textAr[0].Replace(".", ",")), table));
             Console.WriteLine();
         }
     }
