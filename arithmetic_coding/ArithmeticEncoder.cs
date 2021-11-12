@@ -11,27 +11,21 @@ namespace arithmetic_coding
     {
         private static Dictionary<char, double> _probabilities;
 
-        private static Dictionary<char, KeyValuePair<double, double>> _charIntervals =
-            new Dictionary<char, KeyValuePair<double, double>>();
+        private static Dictionary<char, KeyValuePair<double, double>> _charIntervals;
 
         private static void InitCharIntervals(string str)
         {
             double lowerBorder = 0;
-
+            _charIntervals = new Dictionary<char, KeyValuePair<double, double>>();
             _probabilities = GetCharsProbability(str);
 
-            foreach (var character in str)
+            foreach (var item in _probabilities)
             {
-                if (_charIntervals.ContainsKey(character)) continue;
-
-                double upperBorder = lowerBorder + _probabilities[character];
+                double upperBorder = lowerBorder + _probabilities[item.Key];
                 KeyValuePair<double, double> interval = new KeyValuePair<double, double>(lowerBorder, upperBorder);
-                _charIntervals.Add(character, interval);
+                _charIntervals.Add(item.Key, interval);
                 lowerBorder = upperBorder;
             }
-
-            _charIntervals = _charIntervals.OrderBy(pair => pair.Value.Key)
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         private static Dictionary<char, double> GetCharsProbability(string str)
@@ -53,7 +47,10 @@ namespace arithmetic_coding
             foreach (char key in result.Keys.ToArray())
             {
                 result[key] /= str.Length;
+                result[key] = Math.Round(result[key], 5);
             }
+
+            result = result.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
 
             return result;
         }
@@ -63,9 +60,11 @@ namespace arithmetic_coding
             string path = "decode/";
             string fileName = "test_" + str.Substring(0, 6) + ".txt";
 
-            using (FileStream fstream = new FileStream(path + fileName, FileMode.OpenOrCreate))
+            using (FileStream fstream = new FileStream(path + fileName, FileMode.Create))
             {
-                byte[] array = Encoding.Default.GetBytes(encode.ToString(CultureInfo.InvariantCulture) + "\r\n");
+                byte[] array = Encoding.Default.GetBytes(encode.ToString(CultureInfo.InvariantCulture) + "1" + "\r\n");
+                fstream.Write(array, 0, array.Length);
+                array = Encoding.Default.GetBytes(str.Length + "\r\n");
                 fstream.Write(array, 0, array.Length);
 
                 string table = "";
@@ -96,7 +95,7 @@ namespace arithmetic_coding
                 lowerBorder = lowerBorder + interval * _charIntervals[character].Key;
             }
 
-            WriteResultToFile(inputStr, Math.Round(lowerBorder, inputStr.Length));
+            WriteResultToFile(inputStr, lowerBorder);
 
             return lowerBorder;
         }

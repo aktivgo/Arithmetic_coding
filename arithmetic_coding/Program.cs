@@ -72,13 +72,6 @@ namespace arithmetic_coding
             Console.WriteLine("Входные данные:\n" + textFromFile + "\n");
             Console.WriteLine("Результат:");
             Console.WriteLine(ArithmeticEncoder.Encode(textFromFile));
-            /*Dictionary<char, string> result = EncoderHuffman.GetResultTable();
-            foreach (var item in result)
-            {
-                Console.WriteLine((item.Key == '&' ? " " : item.Key.ToString()) + " " + item.Value);
-            }
-            Console.WriteLine();
-            Console.WriteLine("Цена кодирования: " + EncoderHuffman.GetCodingPrice());*/
             Console.WriteLine();
         }
 
@@ -93,7 +86,7 @@ namespace arithmetic_coding
             string[] textAr = textFromFile.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             Dictionary<char, KeyValuePair<double, double>> table =
                 new Dictionary<char, KeyValuePair<double, double>>();
-            for (int i = 1; i < textAr.Length; i++)
+            for (int i = 2; i < textAr.Length; i++)
             {
                 string[] row = textAr[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 char character;
@@ -113,7 +106,7 @@ namespace arithmetic_coding
             }
 
             Console.WriteLine("Результат:");
-            Console.WriteLine(ArithmeticDecoder.Decode(double.Parse(textAr[0].Replace(".", ",")), table));
+            Console.WriteLine(ArithmeticDecoder.Decode(double.Parse(textAr[0].Replace(".", ",")), int.Parse(textAr[1]), table));
             Console.WriteLine();
         }
     }
